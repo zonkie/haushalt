@@ -86,6 +86,7 @@
         <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.min.js"></script>
 
         <script src="{{ asset('/js/flot/jquery.flot.min.js') }}"></script>
+        <script src="{{ asset('/js/flot/jquery.flot.time.js') }}"></script>
         <script src="{{ asset('/js/flot/jquery.flot.pie.min.js') }}"></script>
         <script src="{{ asset('/js/flot/jquery.flot.resize.min.js') }}"></script>
         <script src="{{ asset('/js/date-time/bootstrap-datepicker.min.js') }}"></script>
