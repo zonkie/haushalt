@@ -1,6 +1,0 @@
-/bootstrap/compiled.php
-.env.*.php
-.env.php
-.env
-/vendor/compiled.php
-/config/*.php

@@ -18,7 +18,7 @@ Route::get('/home', 'HomeController@index');
 Route::get('/meters',[
     'as' => 'meters', 'uses' => 'MeterlistController@index@showProfile'
 ]);
-Route::get('/meters/{meter_id}',[
+Route::match(array('GET', 'POST'), '/meters/{meter_id}',[
     'as' => 'meterdetails', 'uses' => 'MeterlistController@meter'
 ]);
 
