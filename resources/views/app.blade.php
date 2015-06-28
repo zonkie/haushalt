@@ -6,6 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>haushalt.domroese.eu</title>
 
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 
         <link rel="stylesheet" href="{{ asset('/css/jquery-ui-1.10.3.custom.min.css') }}"/>
         <link rel="stylesheet" href="{{ asset('/css/chosen.css') }}"/>
@@ -84,6 +85,7 @@
         <!-- Scripts -->
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.min.js"></script>
+
 
         <script src="{{ asset('/js/flot/jquery.flot.min.js') }}"></script>
         <script src="{{ asset('/js/flot/jquery.flot.time.js') }}"></script>

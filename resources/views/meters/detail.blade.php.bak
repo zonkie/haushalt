@@ -7,40 +7,11 @@
         <span>{{$meter->name}} {{($meter->price_per_unit/100)}}&euro; / {{$meter->unit}}</span>
     </div>
     <div class="row">
-        <div id="meter-charts-all-in-one" class="col-xs-12"></div>
-        <div class="col-xs-12 text-center meter-charts-all-in-one input-group">
-            <form action="" class="form-group toggleGraphs" data-graph="meter-charts-all-in-one" id="form-meter-charts-all-in-one">
-                <div class="btn-group text-center col-xs-12" role="group">
-                    <label class="btn btn-default active col-xs-12 col-md-2 absolute" for="meter-charts-all-in-one_total">
-                        <input checked type="checkbox" id="meter-charts-all-in-one_total" name="meter-charts-all-in-one" value="absolute"/>
-                        <i class="fa fa-line-chart"></i> Absolute
-                    </label>
-                    <label class="btn btn-default active col-xs-12 col-md-2 usageTotal" for="meter-charts-all-in-one_diff">
-                        <input checked type="checkbox" id="meter-charts-all-in-one_diff" name="meter-charts-all-in-one" value="usageTotal"/>
-                        <i class="fa fa-line-chart"></i> Total Usage
-                    </label>
-                    <label class="btn btn-default active col-xs-12 col-md-3 usagePerPerson" for="meter-charts-all-in-one_diffPerPerson">
-                        <input checked type="checkbox" id="meter-charts-all-in-one_diffPerPerson" name="meter-charts-all-in-one" value="usagePerPerson"/>
-                        <i class="fa fa-line-chart"></i> Total Usage Per Person
-                    </label>
-                    <label class="btn btn-default active col-xs-12 col-md-2 usageTotalPerDay" for="meter-charts-all-in-one_diffPerDay">
-                        <input checked type="checkbox" id="meter-charts-all-in-one_diffPerDay" name="meter-charts-all-in-one" value="usageTotalPerDay"/>
-                        <i class="fa fa-line-chart"></i> Daily usage
-                    </label>
-                    <label class="btn btn-default active col-xs-12 col-md-3 usagePerPersonPerDay" for="meter-charts-all-in-one_diffPerPersonPerDay">
-                        <input checked type="checkbox" id="meter-charts-all-in-one_diffPerPersonPerDay" name="meter-charts-all-in-one" value="usagePerPersonPerDay"/>
-                        <i class="fa fa-line-chart"></i> Daily usage Per Person
-                    </label>
-                </div>
-            </form>
-        </div>
 
         <div id="meter-charts-absolute" class="col-xs-12 col-sm-6 col-md-4"></div>
         <div id="meter-charts-diff" class="col-xs-12 col-sm-6 col-md-4"></div>
         <div id="meter-charts-day" class="col-xs-12 col-sm-6 col-md-4"></div>
-        <div class="col-xs-4 meter-charts-absolute"></div>
-        <div class="col-xs-4 meter-charts-diff"></div>
-        <div class="col-xs-4 meter-charts-day"></div>
+
     </div>
     <div class="row">
         <div class="panel panel-default">
@@ -107,16 +78,16 @@
                         <th>
                             Usage per Person per Day
                         </th>
-                        <th class="hidden-xs hidden-sm">
+                        <th>
                             Price total
                         </th>
-                        <th class="hidden-xs hidden-sm">
+                        <th>
                             Price Total Per Person
                         </th>
-                        <th class="hidden-xs hidden-sm">
+                        <th>
                             Price per day
                         </th>
-                        <th class="hidden-xs hidden-sm">
+                        <th>
                             Price per person per day
                         </th>
                     </tr>
@@ -124,37 +95,34 @@
                 <tbody>
                     @foreach ($metervalues as $value)
                     <tr class="value-{{$value->id}}">
-                        <td class="value value-read_date hidden-xs hidden-sm">
+                        <td class="value-read_date">
                             {{date('d.m.Y', strtotime($value->read_date)) }}
                         </td>
-                        <td class="value value-read_date hidden-md hidden-lg">
-                            {{date('d.m', strtotime($value->read_date)) }}
-                        </td>
-                        <td class="value value-value absolute">
+                        <td class="value-value">
                             {{number_format($value->value,2,',','')}} {{$meter->unit}}
                         </td>
-                        <td class="value value-diff usageTotal">
+                        <td class="value-diff">
                             {{number_format($value->diff,2,',','')}} {{$meter->unit}}
                         </td>
-                        <td class="value value-diffPerPerson usagePerPerson">
+                        <td class="value-diffPerPerson">
                             {{number_format($value->diffPerPerson,2,',','')}} {{$meter->unit}}
                         </td>
-                        <td class="value value-diffPerDay usageTotalPerDay">
+                        <td class="value-diffPerDay">
                             {{number_format($value->diffPerDay,4,',','')}} {{$meter->unit}}
                         </td>
-                        <td class="value value-diffPerPersonPerDay usagePerPersonPerDay">
+                        <td class="value-diffPerPersonPerDay">
                             {{number_format($value->diffPerPersonPerDay,4,',','')}} {{$meter->unit}}
                         </td>
-                        <td class="value value-diffPrice usageTotal hidden-xs hidden-sm">
+                        <td class="value-diffPrice">
                             {{number_format(($value->diffPrice/100),2,',','')}} &euro;
                         </td>
-                        <td class="value value-diffPricePerPerson usagePerPerson hidden-xs hidden-sm">
+                        <td class="value-diffPricePerPerson">
                             {{number_format(($value->diffPricePerPerson/100),2,',','')}} &euro;
                         </td>
-                        <td class="value value-diffPricePerDay usageTotalPerDay hidden-xs hidden-sm">
+                        <td class="value-diffPricePerDay">
                             {{number_format(($value->diffPricePerDay/100),4,',','')}} &euro;
                         </td>
-                        <td class="value value-diffPricePerPersonPerDay usagePerPersonPerDay hidden-xs hidden-sm">
+                        <td class="value-diffPricePerPersonPerDay">
                             {{number_format(($value->diffPricePerPersonPerDay/100),4,',','')}} &euro;
                         </td>
                     </tr>
@@ -165,6 +133,6 @@
     </div>
 </div>
 
-@include('meters.partials.javascript')
+@include('meters.partials.javascript');
 
 @endsection
