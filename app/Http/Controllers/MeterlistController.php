@@ -102,15 +102,15 @@ class MeterlistController
                 $value->diffPrice = $value->diff * $meter->price_per_unit;
                 if ($value->persons > 0) {
                     $value->diffPerPerson      = ( $value->diff / $value->persons );
-                    $value->diffPricePerPerson = ( ($value->diff * $meter->price_per_unit) / $value->persons );
+                    $value->diffPricePerPerson = ( ( $value->diff * $meter->price_per_unit ) / $value->persons );
                 } else {
                     $value->diffPerPerson = 0;
                 }
                 if ($interval > 0) {
                     $value->diffPerDay               = ( $value->diff / $interval ); //number_format(...,3,',','');
-                    $value->diffPerPersonPerDay      = ( ($value->diff / $location->persons) / $interval ); //number_format(...,3,',','');
-                    $value->diffPricePerDay          = ( $value->diff * $meter->price_per_unit / $interval ) ;
-                    $value->diffPricePerPersonPerDay = ( ($value->diff / $location->persons) * $meter->price_per_unit / $interval );
+                    $value->diffPerPersonPerDay      = ( ( $value->diff / $location->persons ) / $interval ); //number_format(...,3,',','');
+                    $value->diffPricePerDay          = ( $value->diff * $meter->price_per_unit / $interval );
+                    $value->diffPricePerPersonPerDay = ( ( $value->diff / $location->persons ) * $meter->price_per_unit / $interval );
                 } else {
                     $value->diffPerDay               = 0;
                     $value->diffPerPersonPerDay      = 0;
@@ -134,24 +134,78 @@ class MeterlistController
             //            $aGraphValues['diffPerPerson'][strtotime($read_date->format('Y-m-d'))]       = $value->diffPerPerson; //($value->diffPerPersonPerDay *30); //
             //            $aGraphValues['diffPerDay'][strtotime($read_date->format('Y-m-d'))]          = $value->diffPerDay;
             //            $aGraphValues['diffPerPersonPerDay'][strtotime($read_date->format('Y-m-d'))] = $value->diffPerPersonPerDay;
-            $aGraphValues['total']              [$this->getJsDateString($read_date)] =$value->value;
-            $aGraphValues['diff']               [$this->getJsDateString($read_date)] =$value->diff;
-            $aGraphValues['diffPerPerson']      [$this->getJsDateString($read_date)] =$value->diffPerPerson;
-            $aGraphValues['diffPerDay']         [$this->getJsDateString($read_date)] =$value->diffPerDay;
-            $aGraphValues['diffPerPersonPerDay'][$this->getJsDateString($read_date)] =$value->diffPerPersonPerDay;
+            $aGraphValues['total']              [$this->_getJsDateString($read_date)] = $value->value;
+            $aGraphValues['diff']               [$this->_getJsDateString($read_date)] = $value->diff;
+            $aGraphValues['diffPerPerson']      [$this->_getJsDateString($read_date)] = $value->diffPerPerson;
+            $aGraphValues['diffPerDay']         [$this->_getJsDateString($read_date)] = $value->diffPerDay;
+            $aGraphValues['diffPerPersonPerDay'][$this->_getJsDateString($read_date)] = $value->diffPerPersonPerDay;
         }
 
-        $values = array_reverse($values, true);
+        $values   = array_reverse($values, true);
         $viewname = 'meters.detail';
-        if($meter->id == 7){
+        if ($meter->id == 7) {
             $viewname = 'meters.detailtest';
         }
+
         return view($viewname, [ 'location' => $location, 'meter' => $meter, 'metervalues' => $values, 'startDate' => $begin_date, 'endDate' => $end_date, 'graphValues' => $aGraphValues, 'max_value' => $max_value ]);
 
     }
 
 
-    public function getJsDateString($date) {
+    public function compare() {
+
+        $types = DB::select('select DISTINCT type from meters');
+
+        $meters = [ ];
+        foreach ($types AS $type) {
+            $meters[$type->type] = DB::select('select * from meters where type = ?', [ $type->type ]);
+        }
+
+        $locations       = DB::select('select * from locations');
+        $meter_locations = [ ];
+        foreach ($locations AS $location) {
+            $meter_locations[$location->id] = $location;
+        }
+
+        $compare_meters = [ ];
+        $compare_values = [ ];
+        $compare_unit = '';
+        if (isset( $_POST['compare'] )) {
+            $meter_ids = Input::get('compare');
+
+            foreach ($meter_ids AS $meter_id) {
+                $row                       = DB::select('select * from meters where id = ?', [ $meter_id ]);
+                $compare_meters[$meter_id] = $row[0];
+                $compare_values[$meter_id] = DB::select('select * from meter_values where meter = ? ORDER BY read_date ASC', [ $meter_id ]);
+            }
+            $js_values = [ ];
+            foreach ($compare_meters AS $compare_meter_id => $compare_meter) {
+                $compare_unit                  = $compare_meter->unit;
+                $js_values[$compare_meter->id] = array();
+
+                $before_value = 0;
+                foreach ($compare_values[$compare_meter_id] AS $value) {
+                    $date = new \DateTime( $value->read_date );
+                    if ($before_value > 0) {
+                        $js_values[$compare_meter->id][$this->_getJsDateString($date)]['diffPerMonth'] = ( ( $value->value - $before_value ) / $value->persons );
+
+                        $before_value = $value->value;
+                    } else {
+                        $js_values[$compare_meter->id][$this->_getJsDateString($date)]['diffPerMonth'] = 0;
+
+
+                        $before_value = $value->value;
+                    }
+
+                }
+            }
+
+        }
+
+        return view('meters.compare', [ 'meters' => $meters, 'locations' => $meter_locations, 'compareMeters' => $compare_meters, 'compareValues' => ( isset( $js_values ) ? $js_values : array() ), 'compareUnit' => $compare_unit ]);
+    }
+
+    protected function _getJsDateString($date) {
         $result = "gd(";
         $result .= $date->format('Y') . ',';
         $result .= $date->format('m') . ',';
@@ -161,3 +215,4 @@ class MeterlistController
 
     }
 }
+

@@ -1,12 +1,15 @@
 jQuery(document).ready(function() {
 
-    var dataSources = {
-        absolute            : dataTotal,
-        usageTotal          : dataUsageTotal,
-        usagePerPerson      : dataUsagePerPerson,
-        usageTotalPerDay    : dataUsageTotalPerDay,
-        usagePerPersonPerDay: dataUsagePerPersonPerDay
-    };
+    try {
+        var dataSources = {
+            absolute            : dataTotal,
+            usageTotal          : dataUsageTotal,
+            usagePerPerson      : dataUsagePerPerson,
+            usageTotalPerDay    : dataUsageTotalPerDay,
+            usagePerPersonPerDay: dataUsagePerPersonPerDay
+        };
+    } catch (e) {
+    }
     var dataLables = {
         absolute            : "Absolute",
         usageTotal          : "Total Usage",
@@ -133,22 +136,26 @@ jQuery(document).ready(function() {
     } catch (e) {
     }
 
-    var meter_charts_absolute = jQuery('#meter-charts-absolute').css({'height': '220px'});
-    var meter_charts_diff = jQuery('#meter-charts-diff').css({'height': '220px'});
-    var meter_charts_day = jQuery('#meter-charts-day').css({'height': '220px'});
+    try {
 
-    jQuery.plot("#meter-charts-absolute", [
-        {color: '#FF9900', label: "Absolute", data: dataTotal}
-    ], options);
-    jQuery.plot("#meter-charts-diff", [
-        {color: '#00FF00', label: "Total Usage", data: dataUsageTotal},
-        {color: '#AB0000', label: "Total Usage Per Person", data: dataUsagePerPerson}
-    ], options);
+        var meter_charts_absolute = jQuery('#meter-charts-absolute').css({'height': '220px'});
+        var meter_charts_diff = jQuery('#meter-charts-diff').css({'height': '220px'});
+        var meter_charts_day = jQuery('#meter-charts-day').css({'height': '220px'});
 
-    jQuery.plot("#meter-charts-day", [
-        {color: '#000099', label: "Daily usage", data: dataUsageTotalPerDay, xaxis: 2},
-        {color: '#009900', label: "Daily usage Per Person", data: dataUsagePerPersonPerDay, xaxis: 2}
-    ], options);
+        jQuery.plot("#meter-charts-absolute", [
+            {color: '#FF9900', label: "Absolute", data: dataTotal}
+        ], options);
+        jQuery.plot("#meter-charts-diff", [
+            {color: '#00FF00', label: "Total Usage", data: dataUsageTotal},
+            {color: '#AB0000', label: "Total Usage Per Person", data: dataUsagePerPerson}
+        ], options);
+
+        jQuery.plot("#meter-charts-day", [
+            {color: '#000099', label: "Daily usage", data: dataUsageTotalPerDay, xaxis: 2},
+            {color: '#009900', label: "Daily usage Per Person", data: dataUsagePerPersonPerDay, xaxis: 2}
+        ], options);
+    } catch (e) {
+    }
 
     jQuery('#meter-charts-all-in-one').UseTooltip();
     jQuery('#meter-charts-absolute').UseTooltip();
@@ -158,15 +165,12 @@ jQuery(document).ready(function() {
     jQuery('.date-picker').datepicker();
 //    jQuery('.knob').knob();
 
-
-
     jQuery.each(dataColors, function(index, value) {
-        console.log(index);
-        console.log(value);
-        console.log(jQuery('label.' + index));
-        console.log('.' + index + " i");
-        jQuery('.' + index + " i").css('color', value);
-        jQuery('td.value.' + index).css('color', value);
+        try {
+            jQuery('.' + index + " i").css('color', value);
+            jQuery('td.value.' + index).css('color', value);
+        } catch (e) {
+        }
     });
     function DoToggling() {
         var dataSet = [];
@@ -233,18 +237,22 @@ jQuery.fn.UseTooltip = function() {
 };
 
 function showTooltip(x, y, color, contents) {
-    jQuery('<div id="tooltip">' + contents + '</div>').css({
-        position            : 'absolute',
-        display             : 'none',
-        top                 : y + 5,
-        left                : x + 5,
-        border              : '1px solid ' + color,
-        padding             : '3px',
-        'font-size'         : '9px',
-        'border-radius'     : '1px',
-        'background-color'  : '#fff',
-        'background-opacity': '0.3',
-        'font-family'       : 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
-        opacity             : 0.9
-    }).appendTo("body").fadeIn(200);
+    try {
+        jQuery('<div id="tooltip">' + contents + '</div>').css({
+            position            : 'absolute',
+            display             : 'none',
+            top                 : y + 5,
+            left                : x + 5,
+            border              : '1px solid ' + color,
+            padding             : '3px',
+            'font-size'         : '9px',
+            'border-radius'     : '1px',
+            'background-color'  : '#fff',
+            'background-opacity': '0.3',
+            'font-family'       : 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
+            opacity             : 0.9
+        }).appendTo("body").fadeIn(200);
+    } catch (e) {
+    }
+
 }

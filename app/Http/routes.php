@@ -21,6 +21,9 @@ Route::get('/meters',[
 Route::match(array('GET', 'POST'), '/meters/{meter_id}',[
     'as' => 'meterdetails', 'uses' => 'MeterlistController@meter'
 ]);
+Route::match(array('GET', 'POST'), '/compare',[
+    'as' => 'metercompare', 'uses' => 'MeterlistController@compare'
+]);
 
 Route::controllers([
 	'auth' => 'Auth\AuthController',
