@@ -165,6 +165,9 @@
     </div>
 </div>
 
-@include('meters.partials.javascript')
 
+@endsection
+
+@section('javaScript')
+    @include('meters.partials.javascript')
 @endsection

@@ -1,3 +1,4 @@
+@section('javaScript')
 <script>
 
     jQuery(document).ready(function() {
@@ -54,15 +55,13 @@
                     mode              : "time",
                     tickSize          : [1, "month"],
                     tickLength        : 0,
-                    axisLabelUseCanvas: true,
-                    tickLength        : 0
+                    axisLabelUseCanvas: true
                 },
                 {
                     mode              : "time",
                     tickSize          : [10, "day"],
                     tickLength        : 0,
-                    axisLabelUseCanvas: true,
-                    tickLength        : 0
+                    axisLabelUseCanvas: true
                 }
             ],
             yaxes     : [
@@ -73,6 +72,7 @@
                     axisLabelFontFamily    : 'Verdana, Arial',
                     axisLabelPadding       : 3,
                     color                  : dataColors.total
+
                 },
                 {
                     position               : "right",
@@ -115,7 +115,8 @@
                 backgroundColor: {colors: ["#fff", "#EEE"]},
                 borderWidth    : 1,
                 borderColor    : '#555',
-                hoverable      : true
+                hoverable      : true,
+                show: true
             },
             legend    : {
                 show           : true,
@@ -292,3 +293,4 @@
 
 
 </script>
+@endsection

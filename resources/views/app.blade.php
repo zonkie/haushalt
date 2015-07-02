@@ -103,8 +103,6 @@
         <script src="{{ asset('/js/bootbox.js') }}"></script>
         <script src="{{ asset('/js/bootstro.min.js') }}"></script>
 
-        <script src="{{ asset('/js/meter.js') }}"></script>
-
         @yield('javaScript')
 
     </body>
