@@ -29,3 +29,10 @@ Route::controllers([
 	'auth' => 'Auth\AuthController',
 	'password' => 'Auth\PasswordController',
 ]);
+
+
+
+
+Route::match(array('GET', 'POST'), '/test',[
+    'as' => 'test', 'uses' => 'TestController@index'
+]);

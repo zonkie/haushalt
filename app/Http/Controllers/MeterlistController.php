@@ -1,10 +1,16 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use DB;
 use Illuminate\Support\Facades\Input;
 
 use App\Http\Controllers\Controller;
+
+
+use App\Location;
+use App\Meter;
+use App\Metervalue;
 
 class MeterlistController
     extends Controller {
@@ -26,6 +32,7 @@ class MeterlistController
      * @return void
      */
     public function __construct() {
+
         //$this->middleware('auth');
     }
 
@@ -35,23 +42,15 @@ class MeterlistController
      * @return Response
      */
     public function index() {
-        $locations = DB::select('select * from locations where active = ?', [ 1 ]);
+        $locations = Location::where('active', '=', 1)->get(); //DB::select('select * from locations where active = ?', [ 1 ]);
         foreach ($locations AS &$location) {
-            $location->meters = DB::select('select * from meters where location = ? AND active = ?', [ $location->id, 1 ]);
+            $location->meters = Meter::where('location', '=', $location->id)->get(); //DB::select('select * from meters where location = ? AND active = ?', [ $location->id, 1 ]);
         }
 
         return view('meters.list', [ 'locations' => $locations ]);
     }
 
     public function meter($meter_id) {
-
-
-        $meters    = DB::select('select * from meters where id = ?', [ $meter_id ]);
-        $meter     = $meters[0];
-        $locations = DB::select('select * from locations where id = ?', [ $meter->location ]);
-        $location  = $locations[0];
-        $values    = DB::select('select * from meter_values where meter = ? ORDER BY read_date ASC', [ $meter_id ]);
-
         if (isset( $_POST['value'] )) {
             $read_date = Input::get('read_date') . ' 00:00:00';
             //            $read_date_y = str_pad(Input::get('read_date_y'), 4,'0',STR_PAD_LEFT);
@@ -62,14 +61,24 @@ class MeterlistController
             $value = Input::get('value');
 
             $id = DB::table('meter_values')->insertGetId(
-                    array(
-                        'meter'     => $meter_id,
-                        'value'     => $value,
-                        'read_date' => $read_date,
-                        'persons'   => $location->persons,
-                    )
+                array(
+                    'meter'     => $meter_id,
+                    'value'     => $value,
+                    'read_date' => $read_date,
+                    'persons'   => $location->persons,
+                )
             );
         }
+
+
+        //if($meter_id == 7){
+        //    // test meter only...
+        //} else {
+        //}
+
+        $meter    = Meter::find($meter_id);// DB::select('select * from meters where id = ?', [ $meter_id ]);
+        $location = Location::find($meter->location); //DB::select('select * from locations where id = ?', [ $meter->location ]);
+        $values    = Metervalue::where('meter', '=', $meter_id)->get(); //DB::select('select * from meter_values where meter = ? ORDER BY read_date ASC', [ $meter_id ]);
 
         $beforeValue = null;
         $begin_date  = null;
@@ -84,20 +93,22 @@ class MeterlistController
             'diffPerDay'          => array(),
             'diffPerPersonPerDay' => array(),
         );
+
         foreach ($values AS &$value) {
+
             if (is_null($begin_date)) {
-                $begin_date = new \DateTime( $value->read_date );
+                $begin_date = new \DateTime($value->read_date);
             }
 
-            $read_date  = new \DateTime( $value->read_date );
-            $interval   = ( !is_null($end_date) ? $end_date->diff($read_date)->format('%a') : 0 );
+            $read_date  = new \DateTime($value->read_date);
+            $interval   = ( ! is_null($end_date) ? $end_date->diff($read_date)->format('%a') : 0 );
             $days_total = $days_total + $interval;
 
             $value->days = $days_total;
             $max_value   = $value->value;
-            $end_date    = new \DateTime( $value->read_date );
+            $end_date    = new \DateTime($value->read_date);
 
-            if (!is_null($beforeValue)) {
+            if (! is_null($beforeValue)) {
                 $value->diff      = ( $value->value - $beforeValue );
                 $value->diffPrice = $value->diff * $meter->price_per_unit;
                 if ($value->persons > 0) {
@@ -134,14 +145,14 @@ class MeterlistController
             //            $aGraphValues['diffPerPerson'][strtotime($read_date->format('Y-m-d'))]       = $value->diffPerPerson; //($value->diffPerPersonPerDay *30); //
             //            $aGraphValues['diffPerDay'][strtotime($read_date->format('Y-m-d'))]          = $value->diffPerDay;
             //            $aGraphValues['diffPerPersonPerDay'][strtotime($read_date->format('Y-m-d'))] = $value->diffPerPersonPerDay;
-            $aGraphValues['total']              [$this->_getJsDateString($read_date)] = $value->value;
-            $aGraphValues['diff']               [$this->_getJsDateString($read_date)] = $value->diff;
-            $aGraphValues['diffPerPerson']      [$this->_getJsDateString($read_date)] = $value->diffPerPerson;
-            $aGraphValues['diffPerDay']         [$this->_getJsDateString($read_date)] = $value->diffPerDay;
-            $aGraphValues['diffPerPersonPerDay'][$this->_getJsDateString($read_date)] = $value->diffPerPersonPerDay;
+            $aGraphValues['total']              [ $this->_getJsDateString($read_date) ] = $value->value;
+            $aGraphValues['diff']               [ $this->_getJsDateString($read_date) ] = $value->diff;
+            $aGraphValues['diffPerPerson']      [ $this->_getJsDateString($read_date) ] = $value->diffPerPerson;
+            $aGraphValues['diffPerDay']         [ $this->_getJsDateString($read_date) ] = $value->diffPerDay;
+            $aGraphValues['diffPerPersonPerDay'][ $this->_getJsDateString($read_date) ] = $value->diffPerPersonPerDay;
         }
 
-        $values   = array_reverse($values, true);
+        //$values   = array_reverse($values, true);
         $viewname = 'meters.detail';
         if ($meter->id == 7) {
             $viewname = 'meters.detailtest';
@@ -158,40 +169,40 @@ class MeterlistController
 
         $meters = [ ];
         foreach ($types AS $type) {
-            $meters[$type->type] = DB::select('select * from meters where type = ?', [ $type->type ]);
+            $meters[ $type->type ] = DB::select('select * from meters where type = ?', [ $type->type ]);
         }
 
         $locations       = DB::select('select * from locations');
         $meter_locations = [ ];
         foreach ($locations AS $location) {
-            $meter_locations[$location->id] = $location;
+            $meter_locations[ $location->id ] = $location;
         }
 
         $compare_meters = [ ];
         $compare_values = [ ];
-        $compare_unit = '';
+        $compare_unit   = '';
         if (isset( $_POST['compare'] )) {
             $meter_ids = Input::get('compare');
 
             foreach ($meter_ids AS $meter_id) {
-                $row                       = DB::select('select * from meters where id = ?', [ $meter_id ]);
-                $compare_meters[$meter_id] = $row[0];
-                $compare_values[$meter_id] = DB::select('select * from meter_values where meter = ? ORDER BY read_date ASC', [ $meter_id ]);
+                $row                         = DB::select('select * from meters where id = ?', [ $meter_id ]);
+                $compare_meters[ $meter_id ] = $row[0];
+                $compare_values[ $meter_id ] = DB::select('select * from meter_values where meter = ? ORDER BY read_date ASC', [ $meter_id ]);
             }
             $js_values = [ ];
             foreach ($compare_meters AS $compare_meter_id => $compare_meter) {
-                $compare_unit                  = $compare_meter->unit;
-                $js_values[$compare_meter->id] = array();
+                $compare_unit                    = $compare_meter->unit;
+                $js_values[ $compare_meter->id ] = array();
 
                 $before_value = 0;
-                foreach ($compare_values[$compare_meter_id] AS $value) {
-                    $date = new \DateTime( $value->read_date );
+                foreach ($compare_values[ $compare_meter_id ] AS $value) {
+                    $date = new \DateTime($value->read_date);
                     if ($before_value > 0) {
-                        $js_values[$compare_meter->id][$this->_getJsDateString($date)]['diffPerMonth'] = ( ( $value->value - $before_value ) / $value->persons );
+                        $js_values[ $compare_meter->id ][ $this->_getJsDateString($date) ]['diffPerMonth'] = ( ( $value->value - $before_value ) / $value->persons );
 
                         $before_value = $value->value;
                     } else {
-                        $js_values[$compare_meter->id][$this->_getJsDateString($date)]['diffPerMonth'] = 0;
+                        $js_values[ $compare_meter->id ][ $this->_getJsDateString($date) ]['diffPerMonth'] = 0;
 
 
                         $before_value = $value->value;
