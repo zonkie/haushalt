@@ -11,9 +11,10 @@
 |
 */
 
-Route::get('/', 'WelcomeController@index');
-
-Route::get('/home', 'HomeController@index');
+//Route::get('/', 'WelcomeController@index');
+//
+//Route::get('/home', 'HomeController@index');
+Route::get('/', 'HomeController@index');
 
 Route::get('/meters',[
     'as' => 'meters', 'uses' => 'MeterlistController@index@showProfile'

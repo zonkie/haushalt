@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Input;
 
 use App\Http\Controllers\Controller;
 
-
+use Illuminate\Http\Request;
 use App\Location;
 use App\Meter;
 use App\Metervalue;
@@ -33,7 +33,7 @@ class MeterlistController
      */
     public function __construct() {
 
-        //$this->middleware('auth');
+        $this->middleware('auth');
     }
 
     /**
@@ -41,7 +41,14 @@ class MeterlistController
      *
      * @return Response
      */
-    public function index() {
+    public function index(Request $request)
+    {
+        if (!$request->user())
+        {
+            // $request->user() returns an instance of the authenticated user...
+            exit("huargh! " . __FILE__ .':'. __LINE__);
+
+        }
         $locations = Location::where('active', '=', 1)->get(); //DB::select('select * from locations where active = ?', [ 1 ]);
         foreach ($locations AS &$location) {
             $location->meters = Meter::where('location', '=', $location->id)->get(); //DB::select('select * from meters where location = ? AND active = ?', [ $location->id, 1 ]);
